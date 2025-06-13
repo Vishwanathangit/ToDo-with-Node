@@ -7,7 +7,7 @@ function App() {
   const [fruits, setfruits] = useState([])
 
   useEffect(() => {
-    axios.get("http://localhost:3000/fruitslist") // 👈 Update to 3000
+    axios.get("https://todo-with-node-r3bp.onrender.com/fruitslist") // 👈 Update to 3000
       .then((data) => {
         setfruits(data.data)
       })
@@ -19,7 +19,7 @@ function App() {
   }
 
   function add() {
-    axios.post("http://localhost:3000/addfruits", { newfruit: enteredvalue }) // 👈 Update to 3000
+    axios.post("https://todo-with-node-r3bp.onrender.com/addfruits", { newfruit: enteredvalue }) // 👈 Update to 3000
       .then(() => {
         setfruits([...fruits, { Name: enteredvalue }]) // Only update after successful POST
         setevalue("")
