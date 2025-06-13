@@ -1,36 +1,45 @@
-const express = require("express")
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config(); // Load .env
 
-const cors = require("cors")
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-const mongoose = require("mongoose")
+// MongoDB Atlas Connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("DB Connected Successfully"))
+    .catch((err) => console.log("DB Connection Failed:", err));
 
-const app = express()
 
-app.use(cors())
+// Mongoose model
+const Fruit = mongoose.model("Fruit", { Name: String }, "fruit");
 
-app.use(express.json())
+// Routes
+app.get("/fruitslist", function (req, res) {
+    Fruit.find().then(function (retdata) {
+        res.send(retdata);
+    });
+});
 
-mongoose.connect("mongodb://127.0.0.1:27017/todo").then(()=>console.log("DB Success"))
-.catch(()=>console.log("DB Failed"))
+app.post("/addfruits", function (req, res) {
+    const newfruit = req.body.newfruit;
+    const newFruit = new Fruit({ Name: newfruit });
 
-const Fruit = mongoose.model("Fruit",{Name:String},"fruit")
+    newFruit.save()
+        .then(() => {
+            console.log("Saved Successfully");
+            res.status(200).send("Fruit added");
+        })
+        .catch(err => {
+            console.error("Error saving fruit:", err);
+            res.status(500).send("Error saving fruit");
+        });
+});
 
-app.get("/fruitslist",function(req,res){
-     Fruit.find().then(function(retdata){
-     res.send(retdata)
-     })
-})
+// Server
 
-app.post("/addfruits",function(req,res){
-    var newfruit = req.body.newfruit
-     const newFruit = new Fruit(
-        {
-            Name : newfruit
-        }
-     )
-
-     newFruit.save().then(()=>console.log("Saved Sucessfully"))
-})
-app.listen(5000,function(){
-    console.log("Server Started...")
-})
+app.listen(3000, function () {
+    console.log(`Server Started on port`);
+});

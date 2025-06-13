@@ -6,10 +6,12 @@ function App() {
   const [enteredvalue, setevalue] = useState("")
   const [fruits, setfruits] = useState([])
 
-  useEffect(function () {
-    axios.get("http://localhost:5000/fruitslist").then(function (data) {
-      setfruits(data.data)
-    })
+  useEffect(() => {
+    axios.get("http://localhost:3000/fruitslist") // 👈 Update to 3000
+      .then((data) => {
+        setfruits(data.data)
+      })
+      .catch((err) => console.error("GET failed", err))
   }, [])
 
   function handlechange(eve) {
@@ -17,9 +19,12 @@ function App() {
   }
 
   function add() {
-    axios.post("http://localhost:5000/addfruits", { newfruit: enteredvalue })
-    setfruits([...fruits, { Name: enteredvalue }])
-    setevalue("")
+    axios.post("http://localhost:3000/addfruits", { newfruit: enteredvalue }) // 👈 Update to 3000
+      .then(() => {
+        setfruits([...fruits, { Name: enteredvalue }]) // Only update after successful POST
+        setevalue("")
+      })
+      .catch((err) => console.error("POST failed", err))
   }
 
   return (
@@ -42,16 +47,14 @@ function App() {
           </button>
         </div>
         <div className="space-y-3">
-          {fruits.map(function (item, index) {
-            return (
-              <h1
-                key={index}
-                className="text-lg font-medium text-gray-700 bg-gray-50 p-3 rounded-lg shadow-sm"
-              >
-                {item.Name}
-              </h1>
-            )
-          })}
+          {fruits.map((item, index) => (
+            <h1
+              key={index}
+              className="text-lg font-medium text-gray-700 bg-gray-50 p-3 rounded-lg shadow-sm"
+            >
+              {item.Name}
+            </h1>
+          ))}
         </div>
       </div>
     </div>
